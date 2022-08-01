@@ -37,10 +37,10 @@ TCGA-Lung                                 # The directory of the data.
 └─ ...
 ```
 
-## Sampling tiles
+## Convert slide to tiles
 
 ```
-python sample_tiles.py --tile-size 256 --overlap 0 --slide-file <path to save slide> <path to save tiles>
+python main.py --tile-size 512 --overlap 0 --slide-file <path to save slide> <path to save tiles>
 ```
 
 
