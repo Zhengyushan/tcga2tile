@@ -1,12 +1,12 @@
 # tcga2tile
 
-This code repository manages the scripts for making TCGA slide data into the data format used by REMEX lab.
+This code is used to convert TCGA histopathology slide into image tiles.
 
 ## Preparation
 
-Before using the scripts in this repository, the user has already downloaded the slide image data from TCGA by default.
+You may need to download the slides from TCGA before using the scripts in this repository.
 
-Download code can refer to [https://github.com/MarvinLer/tcga_segmentation](https://github.com/MarvinLer/tcga_segmentation)
+Download code please refer to [https://github.com/MarvinLer/tcga_segmentation](https://github.com/MarvinLer/tcga_segmentation)
 
 ## Data format
 
