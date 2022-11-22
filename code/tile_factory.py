@@ -65,7 +65,7 @@ class TileFactory(object):
                                     level_tiles_num, magnification, level_slide_size, self.tile_size)
 
                     # saving tile images
-                    slide_image = np.array(self.slide.read_region((0, 0), 0, level_slide_size))
+                    slide_image = np.array(self.slide.read_region((0, 0), level, level_slide_size))
                     slide_image = cv2.cvtColor(slide_image, cv2.COLOR_RGBA2BGR)
 
                     thread_queue = []
