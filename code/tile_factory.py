@@ -75,7 +75,7 @@ class TileFactory(object):
                     for y, row_image in enumerate(np.split(slide_image, np.arange(self.tile_size, level_slide_size[0], self.tile_size), axis=0)):
                         row_tiles = []
                         tile_pos = []
-                        for x, tile in enumerate(np.split(row_image, np.arange(self.tile_size, level_slide_size[0], self.tile_size), axis=1)):
+                        for x, tile in enumerate(np.split(row_image, np.arange(self.tile_size, level_slide_size[1], self.tile_size), axis=1)):
                             row_tiles.append(tile)
                             tile_pos.append((y, x))
 
