@@ -3,6 +3,9 @@ import time
 import traceback
 from concurrent.futures import ProcessPoolExecutor
 
+import cv2
+import math
+import threading
 import numpy as np
 from openslide import open_slide
 
@@ -10,7 +13,7 @@ from code.utils import MAGNIFICATION_MAP, MAGNIFICATION_DICT, is_tile_mostly_bac
 
 
 class GridsCropWorker:
-    def __init__(self, slide_path, width, height, overlap, level, save_path):
+    def __init__(self, slide_path, width, height, overlap, level, scale, save_path):
         self.slide_path = slide_path
         self.width = width
         self.height = height
@@ -18,7 +21,7 @@ class GridsCropWorker:
         self.level = level
 
         self.save_path = save_path
-        self.scale = 2 ** self.level
+        self.scale = scale
 
     def crop_tiles(self, grids):
         slide = open_slide(self.slide_path)
@@ -60,10 +63,10 @@ class TileFactory(object):
         self.tile_size = int(tile_size)
         self.overlap = int(overlap)
 
-        self.mpp = 10000 / float(self.slide.properties['tiff.XResolution'])
+        # self.mpp = 10000 / float(self.slide.properties['tiff.XResolution'])
 
-        self.magnification = 40
-        # self.magnification = int(self.slide.properties['openslide.objective-power'])
+        # self.magnification = 40
+        self.magnification = int(self.slide.properties['openslide.objective-power'])
         self.num_workers = num_workers
 
     def make_overview(self):
@@ -77,7 +80,8 @@ class TileFactory(object):
         with ProcessPoolExecutor(max_workers=self.num_workers) as executor:
             start = time.time()
             for level in range(self.slide.level_count):
-                magnification = self.magnification / (2 ** level)
+                scale = round(self.slide.level_downsamples[level])
+                magnification = round(self.magnification / scale)
                 try:
                     if magnification in MAGNIFICATION_MAP:
                         magnification_name = MAGNIFICATION_MAP[magnification]
@@ -98,7 +102,8 @@ class TileFactory(object):
                         save_path = os.path.join(self.output_path, magnification_name)
                         if not os.path.exists(save_path):
                             os.makedirs(save_path)
-                        grid_crop_worker = GridsCropWorker(self.slide_path, self.tile_size, self.tile_size, self.overlap, level, save_path)
+
+                        grid_crop_worker = GridsCropWorker(self.slide_path, self.tile_size, self.tile_size, self.overlap, level, scale, save_path)
                         crop_num = list(executor.map(grid_crop_worker.crop_tiles,
                                                      np.array_split(grids, self.num_workers)))
                         crop_num = sum(crop_num)
