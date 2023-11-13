@@ -18,13 +18,14 @@ class GridsCropWorker:
         self.level = level
 
         self.save_path = save_path
+        self.scale = 2 ** self.level
 
     def crop_tiles(self, grids):
         slide = open_slide(self.slide_path)
         crop_num = 0
         for x, y in grids:
             try:
-                tile = slide.read_region((x, y), level=self.level, size=(self.width, self.height))
+                tile = slide.read_region((x * self.scale, y * self.scale), level=self.level, size=(self.width, self.height))
             except Exception as e:
                 traceback.print_exc()
                 print('Tile in x:{} y:{} crop failed.')
