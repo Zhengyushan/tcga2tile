@@ -2,6 +2,9 @@ import os
 import imageio
 import logging
 import numpy as np
+import cv2
+import io
+
 
 # max number of processes for parallelism
 N_PROCESSES = 5
@@ -33,10 +36,21 @@ def infer_class_from_slide_id(slide_id):
     return int(sample_code < 10)
 
 
+def is_tile_size_too_small(image, file_size_threshold=5):
+    img_byte_arr = io.BytesIO()
+    image.save(img_byte_arr, format('JPEG'))
+    img_byte_arr = img_byte_arr.getvalue()
+    img_file_size = len(img_byte_arr) / 1024
+
+    return img_file_size < file_size_threshold
+
+
 def is_tile_mostly_background(image, background_pixel_value=220, background_threshold=0.75):
+    image = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGBA2BGR)
     channel_above_threshold = image > background_pixel_value
     pixel_above_threshold = np.prod(channel_above_threshold, axis=-1)
     percent_background_pixels = np.sum(pixel_above_threshold) / (image.shape[0] * image.shape[1])
+
     return percent_background_pixels > background_threshold
 
 
